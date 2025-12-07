@@ -44,7 +44,8 @@ exports.getCategories = asyncHandler(async (req, res, next) => {
 });
 
 exports.getCategory = asyncHandler(async (req, res, next) => {
-  const category = await Category.findById(req.params.id);
+  // add virtual field named books. populate books means fill books by all books information
+  const category = await Category.findById(req.params.id).populate("books");
 
   if (!category) {
     throw new MyError(req.params.id + ` id doesn't exist `, 400);
