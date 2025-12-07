@@ -15,7 +15,7 @@ connectDB();
 
 //Import Router
 const categoriesRoutes = require("./routes/categories");
-const books = require("./routes/books");
+const booksRoutes = require("./routes/books");
 var accessLogStream = rfs.createStream("access.log", {
     interval: "1d",
     path : path.join(__dirname, "log")
@@ -27,7 +27,7 @@ app.use(express.json());
 app.use(logger);
 app.use(morgan('combined', {stream : accessLogStream}));
 app.use('/api/v1/categories', categoriesRoutes);
-app.use('/api/v1/books', books);
+app.use('/api/v1/books', booksRoutes);
 app.use(errorHandler);
 
 

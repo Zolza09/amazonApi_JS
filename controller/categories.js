@@ -38,6 +38,7 @@ exports.getCategories = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
+    count : categories.length,
     data: categories,
     pagination,
   });
@@ -50,6 +51,16 @@ exports.getCategory = asyncHandler(async (req, res, next) => {
   if (!category) {
     throw new MyError(req.params.id + ` id doesn't exist `, 400);
   }
+
+  // When call get category request we can do our logic. 
+  // For example. We can do click count variable
+  category.name += "-";
+  // category.save(function(err){
+  //   if(err) console.log("error: ", err);
+  //   console.log("saved ...");
+  // }); 
+  await category.save();
+
   res.status(200).json({
     success: true,
     data: category,
@@ -82,11 +93,15 @@ exports.updateCategory = asyncHandler(async (req, res, next) => {
 });
 
 exports.deleteCategory = asyncHandler(async (req, res, next) => {
-  const category = await Category.findByIdAndDelete(req.params.id);
+  const category = await Category.findById(req.params.id);
 
   if (!category) {
     throw new MyError(req.params.id + `id doesn't exist`, 400);
   }
+
+  //This remove is call our Category model remove function
+  await category.deleteOne();
+
   res.status(200).json({
     success: true,
     data: category,
