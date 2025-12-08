@@ -54,12 +54,8 @@ exports.getCategory = asyncHandler(async (req, res, next) => {
 
   // When call get category request we can do our logic. 
   // For example. We can do click count variable
-  category.name += "-";
-  // category.save(function(err){
-  //   if(err) console.log("error: ", err);
-  //   console.log("saved ...");
-  // }); 
-  await category.save();
+  //category.name += "-"; 
+  //await category.save();
 
   res.status(200).json({
     success: true,

@@ -1,15 +1,17 @@
 const express = require("express");
 
-const { getBooks } = require("../controller/books");
+const {
+  getBooks,
+  getBook,
+  createBook,
+  updateBook,
+  deleteBook,
+} = require("../controller/books");
 
-const router = express.Router({mergeParams : true});
+const router = express.Router({ mergeParams: true });
 
-router.route("/").get(getBooks);
+router.route("/").get(getBooks).post(createBook);
 
-// router
-//   .route("/:id")
-//   .get(getCategory)
-//   .put(updateCategory)
-//   .delete(deleteCategory);
+router.route("/:id").get(getBook).put(updateBook).delete(deleteBook);
 
 module.exports = router;
