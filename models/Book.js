@@ -61,8 +61,12 @@ BookSchema.statics.computeCategoryAveragePrice = async function (catId) {
   ]);
 
   console.log(obj);
+
+  let avgPrice = null;
+  if(obj.length > 0) avgPrice = obj[0].avgPrice;
+
   await this.model('Category').findByIdAndUpdate(catId, {
-    averagePrice: obj[0].avgPrice
+    averagePrice: avgPrice,
   });
 
   return obj;

@@ -36,9 +36,12 @@ exports.getBook = asyncHandler(async (req, res, next) => {
     throw new MyError(req.params.id + "ID-тай ном байхгүй байна.", 404);
   }
 
+  const avg = await Book.computeCategoryAveragePrice(book.category);
+
   res.status(200).json({
     success: true,
     data: book,
+    dundaj : avg,
   });
 });
 
