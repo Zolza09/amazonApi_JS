@@ -53,6 +53,30 @@ const BookSchema = new mongoose.Schema(
   { toJSON: { virtuals: true }, toObject: { virtuals: true } }
 );
 
+
+BookSchema.statics.computeCategoryAveragePrice = async function (catId) {
+  const obj = await this.aggregate([
+    { $match: {category: catId}},
+    { $group: {_id : "$category", avgPrice: {$avg: "$price"}}},
+  ]);
+
+  console.log(obj);
+  await this.model('Category').findByIdAndUpdate(catId, {
+    averagePrice: obj[0].avgPrice
+  });
+
+  return obj;
+}
+
+BookSchema.post('save', function(){
+  this.constructor.computeCategoryAveragePrice(this.category);
+});
+
+BookSchema.post('deleteOne', { document: true, query: false }, function(){
+  console.log("Bookschema remove function is called ....");
+  this.constructor.computeCategoryAveragePrice(this.category);
+});
+
 // add new virtual field it doesn't exist in real db
 BookSchema.virtual("zohiogch").get(function(){
   return "Zoloo";

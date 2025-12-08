@@ -56,7 +56,7 @@ CategorySchema.pre("save", function (next) {
   // convert utf-8 to ASCII
   this.slug = slugify(this.name);
   this.averageRating = Math.floor(Math.random() * 10) + 1;
-  this.averagePrice = Math.floor(Math.random() * 100000) + 3000;  
+  //this.averagePrice = Math.floor(Math.random() * 100000) + 3000;  
 });
 
 module.exports = mongoose.model("Category", CategorySchema);

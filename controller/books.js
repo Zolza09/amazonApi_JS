@@ -79,7 +79,7 @@ exports.deleteBook = asyncHandler(async (req, res, next) => {
   if (!book) {
     throw new MyError(req.params.id + "D-тай ном байхгүй байна.", 404);
   }
-  
+
   await book.deleteOne();
   res.status(200).json({
     success: true,
