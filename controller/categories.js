@@ -3,6 +3,7 @@ const MyError = require("../utils/myError");
 //const asyncHandler = require("../middleware/asyncHandler");
 const qs = require("qs");
 const asyncHandler = require("express-async-handler");
+const paginate = require("../utils/paginate");
 // middleware style write
 exports.getCategories = asyncHandler(async (req, res, next) => {
   const parsed = qs.parse(req.query);
@@ -16,24 +17,12 @@ exports.getCategories = asyncHandler(async (req, res, next) => {
   // Iteration for delete values from parsed query obj
   ["page", "limit", "sort", "select"].forEach((el) => delete parsed[el]);
 
-  console.log(page, limit);
-  console.log(parsed, select, sort);
-
   // Pagination
-  const total = await Category.countDocuments();
-  const pageCount = Math.ceil(total / limit);
-  const start = (page - 1) * limit + 1;
-  let end = start + limit - 1;
-  if (end > total) end = total;
-
-  const pagination = { total, pageCount, start, end, limit };
-
-  if (page < pageCount) pagination.nextPage = page + 1;
-  if (page > 1) pagination.prevPage = page - 1;
-
+  const pagination = await paginate(page, limit, Category);
+  
   const categories = await Category.find(parsed, select)
     .sort(sort)
-    .skip(start - 1)
+    .skip(pagination.start - 1)
     .limit(limit);
 
   res.status(200).json({
