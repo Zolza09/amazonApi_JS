@@ -8,14 +8,15 @@ const morgan = require("morgan");
 const logger = require('./middleware/logger');
 const colors = require("colors");
 const errorHandler = require('./middleware/error');
-
-dotenv.config({path: './config/config.env'});
-
-connectDB();
+const fileupload = require('express-fileupload');
 
 //Import Router
 const categoriesRoutes = require("./routes/categories");
 const booksRoutes = require("./routes/books");
+
+dotenv.config({path: './config/config.env'});
+connectDB();
+
 var accessLogStream = rfs.createStream("access.log", {
     interval: "1d",
     path : path.join(__dirname, "log")
@@ -24,6 +25,7 @@ var accessLogStream = rfs.createStream("access.log", {
 const app = express();
 // body parser
 app.use(express.json());
+app.use(fileupload());
 app.use(logger);
 app.use(morgan('combined', {stream : accessLogStream}));
 app.use('/api/v1/categories', categoriesRoutes);
