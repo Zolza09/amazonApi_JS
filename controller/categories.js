@@ -12,7 +12,7 @@ exports.getCategories = asyncHandler(async (req, res, next) => {
 
   // no query page and limit default value
   const page = parseInt(parsed.page) || 1;
-  const limit = parseInt(parsed.limit) || 20;
+  const limit = parseInt(parsed.limit) || 5;
 
   // Iteration for delete values from parsed query obj
   ["page", "limit", "sort", "select"].forEach((el) => delete parsed[el]);
@@ -40,11 +40,6 @@ exports.getCategory = asyncHandler(async (req, res, next) => {
   if (!category) {
     throw new MyError(req.params.id + ` id doesn't exist `, 400);
   }
-
-  // When call get category request we can do our logic. 
-  // For example. We can do click count variable
-  //category.name += "-"; 
-  //await category.save();
 
   res.status(200).json({
     success: true,
