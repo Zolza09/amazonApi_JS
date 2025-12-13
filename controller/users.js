@@ -10,7 +10,7 @@ exports.register = asyncHandler(async (req, res, next) => {
   res.status(200).json({
     success: true,
     token: token,
-    data: user,
+    data: user.name,
   });
 });
 
@@ -21,10 +21,8 @@ exports.login = asyncHandler(async (req, res, next) => {
     throw new MyError("Имэйл болон нууц үгээ оруулна уу", 400);
   }
 
-  const user = await User.findOne({ email }).select("password");
-  console.log(email);
-  console.log(password);
-  
+  const user = await User.findOne({ email }).select("+password");
+    
   if (!user) {
     throw new MyError("Имэйл болон нууц буруу байна 1", 401);
   }
@@ -36,6 +34,6 @@ exports.login = asyncHandler(async (req, res, next) => {
   res.status(200).json({
     success: true,
     token: user.getJWT(),
-    data: user,
+    role: user.role
   });
 });

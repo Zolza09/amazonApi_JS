@@ -1,5 +1,5 @@
 const express = require("express");
-const {protect} = require("../middleware/protect");
+const {protect, authorize} = require("../middleware/protect");
 
 const router = express.Router();
 
@@ -16,13 +16,13 @@ const { getCategoryBooks } = require("../controller/books");
 router.route("/:categoryId/books").get(getCategoryBooks);
 
 // api/v1/caterories
-router.route("/").get(getCategories).post(protect, createCategory);
+router.route("/").get(getCategories).post(protect, authorize("admin"), createCategory);
 
 // 2. Second method:
 router
   .route("/:id")
   .get(getCategory)
-  .put(protect, updateCategory)
-  .delete(protect, deleteCategory);
+  .put(protect, authorize("admin", "operator"),  updateCategory)
+  .delete(protect, authorize("admin"), deleteCategory);
 
 module.exports = router;

@@ -19,6 +19,21 @@ exports.protect = asyncHandler(async (req, res, next) => {
   const tokenObj = jwt.verify(token, process.env.JWT_SECRET);
 
   req.userId = tokenObj.id;
-  next();
+  req.userRole = tokenObj.role;
 
+  console.log("tokenObj: ", tokenObj);
+  next();
 });
+
+exports.authorize = (...roles) => {
+  return (req, res, next) => {
+    if (!roles.includes(req.userRole)) {
+      throw new MyError(
+        "Таны эрх [" + [req.userRole] + "] энэ үйлдлийг гүйцэтгэхэд хүрэлцэхгүй!",
+        403
+      );
+    }
+
+    next();
+  };
+};

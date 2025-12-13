@@ -42,14 +42,19 @@ UserSchema.pre("save", async function () {
 });
 
 UserSchema.methods.getJWT = function () {
-  const token = jwt.sign({ id: this._id }, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_EXPIREIN,
-  });
+  //generate JWT token
+  const token = jwt.sign(
+    { id: this._id, role: this.role },
+    process.env.JWT_SECRET,
+    {
+      expiresIn: process.env.JWT_EXPIREIN,
+    }
+  );
 
   return token;
 };
 
-UserSchema.methods.checkPassword = async function(inPassword) {
-    return await bcrypt.compare(inPassword, this.password);
+UserSchema.methods.checkPassword = async function (inPassword) {
+  return await bcrypt.compare(inPassword, this.password);
 };
 module.exports = mongoose.model("User", UserSchema);
