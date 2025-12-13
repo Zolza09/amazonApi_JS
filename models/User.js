@@ -57,4 +57,12 @@ UserSchema.methods.getJWT = function () {
 UserSchema.methods.checkPassword = async function (inPassword) {
   return await bcrypt.compare(inPassword, this.password);
 };
+
+UserSchema.virtual("books", {
+  ref: "Book",
+  localField: "_id",
+  foreignField: "category",
+  justOne: false,
+});
+
 module.exports = mongoose.model("User", UserSchema);
