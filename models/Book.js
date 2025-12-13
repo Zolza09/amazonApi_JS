@@ -45,6 +45,14 @@ const BookSchema = new mongoose.Schema(
       ref: "Category",
       required: true,
     },
+    createdUser: {
+      type: mongoose.Schema.ObjectId,
+      ref: "User",
+    },
+    updatedUser: {
+      type: mongoose.Schema.ObjectId,
+      ref: "User",
+    },
     createdAt: {
       type: Date,
       default: Date.now,
@@ -76,8 +84,7 @@ BookSchema.post('save', function(){
   this.constructor.computeCategoryAveragePrice(this.category);
 });
 
-BookSchema.post('deleteOne', { document: true, query: false }, function(){
-  console.log("Bookschema remove function is called ....");
+BookSchema.post('deleteOne', { document: true, query: false }, function(){ 
   this.constructor.computeCategoryAveragePrice(this.category);
 });
 

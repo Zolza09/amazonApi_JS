@@ -15,7 +15,7 @@ exports.getBooks = asyncHandler(async (req, res, next) => {
   const sort = parsed.sort;
 
   const page = parseInt(parsed.page) || 1;
-  const limit = parseInt(parsed.limit) || 5;
+  const limit = parseInt(parsed.limit) || 20;
 
   // Iteration for delete values from parsed query obj
   ["page", "limit", "sort", "select"].forEach((el) => delete parsed[el]);
@@ -90,6 +90,8 @@ exports.createBook = asyncHandler(async (req, res, next) => {
     );
   }
 
+  req.body.createdUser = req.userId;
+
   const book = await Book.create(req.body);
   res.status(200).json({
     success: true,
@@ -98,6 +100,9 @@ exports.createBook = asyncHandler(async (req, res, next) => {
 });
 
 exports.updateBook = asyncHandler(async (req, res, next) => {
+
+  req.body.updatedUser = req.userId;
+  
   const book = await Book.findByIdAndUpdate(req.params.id, req.body, {
     new: true,
     runValidators: true,
