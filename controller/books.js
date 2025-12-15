@@ -82,7 +82,8 @@ exports.getUserBook = asyncHandler(async (req, res, next) => {
   // Pagination
   const pagination = await paginate(page, limit, Book);
 
-  parsed.createdUser = req.userId;
+  parsed.createdUser = req.params.id;
+  
   const books = await Book.find(parsed, select)
     .sort(sort)
     .skip(pagination.start - 1)
@@ -131,16 +132,27 @@ exports.createBook = asyncHandler(async (req, res, next) => {
 
 exports.updateBook = asyncHandler(async (req, res, next) => {
 
+  const book = await Book.findById(req.params.id);
+
+   if (!book) {
+    throw new MyError(req.params.id + "ID-тай ном байхгүй байна.", 400);
+  }
+
+  console.log("Book id: ", req.params.id);
+  console.log("Created User: ", book.createdUser.toString());
+  console.log("JWT user ID: ", req.userId);
+
+
+  if (book.createdUser.toString() !== req.userId && req.userRole !== "admin"){
+    throw new MyError("Та зөвхөн өөрийн номыг л засварлах эрхтэй", 403);
+  }
   req.body.updatedUser = req.userId;
   
-  const book = await Book.findByIdAndUpdate(req.params.id, req.body, {
-    new: true,
-    runValidators: true,
-  });
-
-  if (!book) {
-    throw new MyError(req.params.id + "D-тай ном байхгүй байна.", 404);
+  for (let key in req.body) {
+    book[key] = req.body[key];
   }
+
+  await book.save();
 
   res.status(200).json({
     success: true,
@@ -155,6 +167,9 @@ exports.deleteBook = asyncHandler(async (req, res, next) => {
     throw new MyError(req.params.id + "D-тай ном байхгүй байна.", 404);
   }
 
+  if (book.createdUser.toString() !== req.userId && req.userRole !== "admin"){
+    throw new MyError("Та зөвхөн өөрийн номыг л засварлах эрхтэй", 403);
+  }
   const user = await User.findById(req.userId);
   await book.deleteOne();
 

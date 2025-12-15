@@ -20,8 +20,6 @@ exports.protect = asyncHandler(async (req, res, next) => {
 
   req.userId = tokenObj.id;
   req.userRole = tokenObj.role;
-
-  console.log("tokenObj: ", tokenObj);
   next();
 });
 

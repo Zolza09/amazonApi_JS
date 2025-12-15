@@ -73,7 +73,7 @@ exports.getUser = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.params.id);
 
   if (!user) {
-    throw new MyError(req.params.id + ` id doesn't exist `, 400);
+    throw new MyError(req.params.id + ` id User doesn't exist `, 400);
   }
 
   res.status(200).json({
@@ -98,7 +98,7 @@ exports.updateUser = asyncHandler(async (req, res, next) => {
   });
 
   if (!user) {
-    throw new MyError(req.params.id + " id doesn't exist ", 400);
+    throw new MyError(req.params.id + " id User doesn't exist ", 400);
   }
 
   res.status(200).json({
@@ -111,7 +111,7 @@ exports.deleteUser = asyncHandler(async (req, res, next) => {
   const user = await User.findById(req.params.id);
 
   if (!user) {
-    throw new MyError(req.params.id + `id doesn't exist`, 400);
+    throw new MyError(req.params.id + `id User doesn't exist`, 400);
   }
 
   //This remove is call our Category model remove function
