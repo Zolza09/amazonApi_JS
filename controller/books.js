@@ -68,6 +68,34 @@ exports.getCategoryBooks = asyncHandler(async (req, res, next) => {
   });
 });
 
+exports.getUserBook = asyncHandler(async (req, res, next) => {
+  const parsed = qs.parse(req.query);
+  const select = parsed.select;
+  const sort = parsed.sort;
+
+  const page = parseInt(parsed.page) || 1;
+  const limit = parseInt(parsed.limit) || 10;
+
+  // Iteration for delete values from parsed query obj
+  ["page", "limit", "sort", "select"].forEach((el) => delete parsed[el]);
+
+  // Pagination
+  const pagination = await paginate(page, limit, Book);
+
+  parsed.createdUser = req.userId;
+  const books = await Book.find(parsed, select)
+    .sort(sort)
+    .skip(pagination.start - 1)
+    .limit(limit);
+
+  res.status(200).json({
+    success: true,
+    count: books.length,
+    data: books,
+    pagination
+  });
+});
+
 exports.getBook = asyncHandler(async (req, res, next) => {
   const book = await Book.findById(req.params.id).populate();
   if (!book) {
@@ -79,6 +107,8 @@ exports.getBook = asyncHandler(async (req, res, next) => {
     data: book,
   });
 });
+
+
 
 exports.createBook = asyncHandler(async (req, res, next) => {
   const category = await Category.findById(req.body.category);

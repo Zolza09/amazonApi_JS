@@ -1,5 +1,5 @@
 const express = require("express");
-const {protect, authorize} = require("../middleware/protect");
+const { protect, authorize } = require("../middleware/protect");
 const {
   register,
   login,
@@ -10,17 +10,27 @@ const {
   createUser,
 } = require("../controller/users");
 
-const router = express.Router();
+const { getUserBook } = require("../controller/books");
 
-// api/v1/users
-router.route("/").post(createUser).get(getUsers);
+const router = express.Router();
 router.route("/login").post(login);
-router.route("/register").post(register)
+router.route("/register").post(register);
+
+router.use(protect);
+// api/v1/users
+router
+  .route("/")
+  .post(authorize("admin"), createUser)
+  .get(authorize("admin", "operator"), getUsers);
+
 // 2. Second method:
 router
   .route("/:id")
-  .get(getUser)
-  .put(protect, authorize("admin", "operator"), updateUser)
-  .delete(protect, authorize("admin"), deleteUser);
+  .get(authorize("admin", "operator", "user"), getUser)
+  .put(authorize("admin", "operator"), updateUser)
+  .delete(authorize("admin"), deleteUser);
 
+router
+  .route("/:id/books")
+  .get(authorize("admin", "operator", "user"), getUserBook);
 module.exports = router;
