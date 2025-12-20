@@ -38,9 +38,8 @@ const UserSchema = new mongoose.Schema({
 });
 
 UserSchema.pre("save", async function () {
-
   //Herew password uurchlugduugu bval shuud daraa middleware yvna
-  if(!this.isModified("password")) return;
+  if (!this.isModified("password")) return;
 
   const salt = await bcrypt.genSaltSync(10);
   this.password = await bcrypt.hash(this.password, salt);
@@ -65,10 +64,12 @@ UserSchema.methods.checkPassword = async function (inPassword) {
 
 UserSchema.methods.generatePasswordChangeToken = function () {
   const resetToken = crypto.randomBytes(20).toString("hex");
-
+  // hash created resetToken 
+  this.resetPasswordToken = crypto.createHash("sha256").update(resetToken).digest("hex");
+  // token expire 5 minut
+  this.resetPasswordExpire = Date.now() + 5 * 60 * 1000; 
   return resetToken;
 };
-
 
 UserSchema.virtual("books", {
   ref: "Book",

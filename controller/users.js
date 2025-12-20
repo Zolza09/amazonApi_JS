@@ -136,12 +136,15 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
     throw new MyError(req.body.email + ` имэлтэй хэрэглэгч олдсонгүй! `, 400);
   }
 
-  user.resetPasswordToken = user.generatePasswordChangeToken();
-  user.save();
-  // send token
+  const resetToken = user.generatePasswordChangeToken();
+  await user.save();
+  
+  // await user.save({runValidators: false});
+
+  // send email to user resetToken
 
   res.status(200).json({
     success: true,
-    data: user.resetPasswordToken,
+    resetToken,
   });
 });
