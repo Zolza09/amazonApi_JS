@@ -122,3 +122,26 @@ exports.deleteUser = asyncHandler(async (req, res, next) => {
     data: user,
   });
 });
+
+
+exports.forgotPassword = asyncHandler(async (req, res, next) => {
+  // add virtual field named books. populate books means fill books by all books information
+  if(!req.body.email) {
+    throw new MyError("Та нууц үг сэргээх эмайл хаягаа дамжуулна уу", 400);
+  }
+
+  const user = await User.findOne({email: req.body.email});
+
+  if (!user) {
+    throw new MyError(req.body.email + ` имэлтэй хэрэглэгч олдсонгүй! `, 400);
+  }
+
+  user.resetPasswordToken = user.generatePasswordChangeToken();
+  user.save();
+  // send token
+
+  res.status(200).json({
+    success: true,
+    data: user.resetPasswordToken,
+  });
+});

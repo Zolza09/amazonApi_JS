@@ -1,6 +1,7 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
 
 const UserSchema = new mongoose.Schema({
   name: {
@@ -37,6 +38,10 @@ const UserSchema = new mongoose.Schema({
 });
 
 UserSchema.pre("save", async function () {
+
+  //Herew password uurchlugduugu bval shuud daraa middleware yvna
+  if(!this.isModified("password")) return;
+
   const salt = await bcrypt.genSaltSync(10);
   this.password = await bcrypt.hash(this.password, salt);
 });
@@ -57,6 +62,13 @@ UserSchema.methods.getJWT = function () {
 UserSchema.methods.checkPassword = async function (inPassword) {
   return await bcrypt.compare(inPassword, this.password);
 };
+
+UserSchema.methods.generatePasswordChangeToken = function () {
+  const resetToken = crypto.randomBytes(20).toString("hex");
+
+  return resetToken;
+};
+
 
 UserSchema.virtual("books", {
   ref: "Book",
