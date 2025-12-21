@@ -41,7 +41,7 @@ UserSchema.pre("save", async function () {
   //Herew password uurchlugduugu bval shuud daraa middleware yvna
   if (!this.isModified("password")) return;
 
-  const salt = await bcrypt.genSaltSync(10);
+  const salt = await bcrypt.genSalt(10);
   this.password = await bcrypt.hash(this.password, salt);
 });
 

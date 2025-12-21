@@ -3,7 +3,7 @@ const MyError = require("../utils/myError");
 const qs = require("qs");
 const asyncHandler = require("express-async-handler");
 const paginate = require("../utils/paginate");
-
+const sendEmail = require("../utils/email");
 exports.register = asyncHandler(async (req, res, next) => {
   const user = await User.create(req.body);
 
@@ -23,22 +23,21 @@ exports.login = asyncHandler(async (req, res, next) => {
   }
 
   const user = await User.findOne({ email }).select("+password");
-    
+
   if (!user) {
     throw new MyError("Имэйл болон нууц буруу байна 1", 401);
   }
   const result = user.checkPassword(password);
-  if(!result) {
+  if (!result) {
     throw new MyError("Имэйл болон нууц буруу байна 2", 401);
   }
 
   res.status(200).json({
     success: true,
     token: user.getJWT(),
-    role: user.role
+    role: user.role,
   });
 });
-
 
 exports.getUsers = asyncHandler(async (req, res, next) => {
   const parsed = qs.parse(req.query);
@@ -54,7 +53,7 @@ exports.getUsers = asyncHandler(async (req, res, next) => {
 
   // Pagination
   const pagination = await paginate(page, limit, User);
-  
+
   const users = await User.find(parsed, select)
     .sort(sort)
     .skip(pagination.start - 1)
@@ -62,7 +61,7 @@ exports.getUsers = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    count : users.length,
+    count: users.length,
     data: users,
     pagination,
   });
@@ -123,14 +122,13 @@ exports.deleteUser = asyncHandler(async (req, res, next) => {
   });
 });
 
-
 exports.forgotPassword = asyncHandler(async (req, res, next) => {
   // add virtual field named books. populate books means fill books by all books information
-  if(!req.body.email) {
+  if (!req.body.email) {
     throw new MyError("Та нууц үг сэргээх эмайл хаягаа дамжуулна уу", 400);
   }
 
-  const user = await User.findOne({email: req.body.email});
+  const user = await User.findOne({ email: req.body.email });
 
   if (!user) {
     throw new MyError(req.body.email + ` имэлтэй хэрэглэгч олдсонгүй! `, 400);
@@ -138,13 +136,22 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
 
   const resetToken = user.generatePasswordChangeToken();
   await user.save();
-  
   // await user.save({runValidators: false});
+  const link = `https://amazon.mn/changepassword/${resetToken}`;
+
+  const message = `Сайн байна уу <br><br>Та нууц үгээ солих хүсэлт илгээлээ.<br> Нууц үгээ доорхи линк дээр дарж солино уу: <br><br><a href="${link}">${link}</a> <br><br> Өдрийг сайхан өнгөрүүлээрэй!`;
 
   // send email to user resetToken
+  const info = await sendEmail({
+    email: user.email,
+    subject: "Нууц үг өөрчлөх хүсэлт",
+  });
+
+  console.log("Message sent:", info.messageId);
 
   res.status(200).json({
     success: true,
     resetToken,
+    message,
   });
 });
