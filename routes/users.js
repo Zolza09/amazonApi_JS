@@ -9,6 +9,7 @@ const {
   deleteUser,
   createUser,
   forgotPassword,
+  resetPassword,
 } = require("../controller/users");
 
 const { getUserBook } = require("../controller/books");
@@ -17,6 +18,7 @@ const router = express.Router();
 router.route("/login").post(login);
 router.route("/register").post(register);
 router.route("/forgot-password").post(forgotPassword);
+router.route("/reset-password").post(resetPassword);
 
 router.use(protect);
 // api/v1/users

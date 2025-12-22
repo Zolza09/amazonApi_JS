@@ -4,6 +4,8 @@ const qs = require("qs");
 const asyncHandler = require("express-async-handler");
 const paginate = require("../utils/paginate");
 const sendEmail = require("../utils/email");
+const crypto = require("crypto");
+
 exports.register = asyncHandler(async (req, res, next) => {
   const user = await User.create(req.body);
 
@@ -27,7 +29,7 @@ exports.login = asyncHandler(async (req, res, next) => {
   if (!user) {
     throw new MyError("Имэйл болон нууц буруу байна 1", 401);
   }
-  const result = user.checkPassword(password);
+  const result = await user.checkPassword(password);
   if (!result) {
     throw new MyError("Имэйл болон нууц буруу байна 2", 401);
   }
@@ -151,7 +153,38 @@ exports.forgotPassword = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    resetToken,
-    message,
+    resetToken
+  });
+});
+
+exports.resetPassword = asyncHandler(async (req, res, next) => {
+  // add virtual field named books. populate books means fill books by all books information
+  if (!req.body.resetToken || !req.body.password) {
+    throw new MyError("Та нууц үг болон рэсэт токен дамжуулна уу", 400);
+  }
+
+  const encrypted = crypto
+    .createHash("sha256")
+    .update(req.body.resetToken)
+    .digest("hex");
+
+  const user = await User.findOne({
+    resetPasswordToken: encrypted,
+    resetPasswordExpire: { $gt: Date.now() },
+  });
+
+  if (!user) {
+    throw new MyError(`Хүчингүй токен байна! `, 400);
+  }
+
+  user.password = req.body.password;
+  user.resetPasswordToken = undefined;
+  user.resetPasswordExpire = undefined;
+  await user.save();
+
+  res.status(200).json({
+    success: true,
+    token: user.getJWT(),
+    user,
   });
 });
