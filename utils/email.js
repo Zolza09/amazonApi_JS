@@ -19,8 +19,6 @@ const sendEmail = async (options) => {
     html: options.message, // HTML version of the message
   });
 
-  console.log("Message sent:", info.messageId);
-
   return info;
 };
 
