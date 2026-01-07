@@ -19,7 +19,7 @@ exports.getCategories = asyncHandler(async (req, res, next) => {
 
   // Pagination
   const pagination = await paginate(page, limit, Category);
-  
+
   const categories = await Category.find(parsed, select)
     .sort(sort)
     .skip(pagination.start - 1)
@@ -27,13 +27,29 @@ exports.getCategories = asyncHandler(async (req, res, next) => {
 
   res.status(200).json({
     success: true,
-    count : categories.length,
+    count: categories.length,
     data: categories,
     pagination,
   });
 });
 
 exports.getCategory = asyncHandler(async (req, res, next) => {
+
+  // sequelize db already added in req 
+  req.db.teacher.create({
+    id: 2,
+    name: "Zoloo",
+    phone: "99885180",
+    password: "123123"
+  });
+
+  req.db.course.create({
+    id: 1,
+    name : "Qt C++ Online Course",
+    price: 32000,
+    tailbar: "C++ fundenmental and Modern C++ v20",
+  });
+
   // add virtual field named books. populate books means fill books by all books information
   const category = await Category.findById(req.params.id).populate("books");
 

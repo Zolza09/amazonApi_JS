@@ -34,4 +34,6 @@ models.forEach(model => {
     db[seqModel.name] = seqModel;
 })
 
+db.sequelize = sequelize;
+
 module.exports = db;
