@@ -38,8 +38,11 @@ app.use("/api/v1/books", booksRoutes);
 app.use("/api/v1/users", usersRoutes);
 app.use(errorHandler);
 
+db.course.belongsToMany(db.teacher, {through: "teacher_course"});
+db.teacher.belongsToMany(db.course, {through: "teacher_course"});
+
 db.sequelize
-  .sync()
+  .sync({force: true})
   .then((result) => {
     console.log("sync hiigdlee...");
   })
