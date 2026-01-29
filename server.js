@@ -14,6 +14,7 @@ const fileupload = require("express-fileupload");
 const categoriesRoutes = require("./routes/categories");
 const booksRoutes = require("./routes/books");
 const usersRoutes = require("./routes/users");
+const commentsRoutes = require("./routes/comments");
 const injectDb = require("./middleware/injectDb");
 
 dotenv.config({ path: "./config/config.env" });
@@ -36,13 +37,17 @@ app.use(morgan("combined", { stream: accessLogStream }));
 app.use("/api/v1/categories", categoriesRoutes);
 app.use("/api/v1/books", booksRoutes);
 app.use("/api/v1/users", usersRoutes);
+app.use("/api/v1/comments", commentsRoutes);
 app.use(errorHandler);
 
-db.course.belongsToMany(db.teacher, {through: "teacher_course"});
-db.teacher.belongsToMany(db.course, {through: "teacher_course"});
+db.book.belongsToMany(db.user, {through: "comments"});
+db.user.belongsToMany(db.book, {through: "comments"});
+db.category.hasMany(db.book);
+db.book.belongsTo(db.category);
 
 db.sequelize
-  .sync({force: true})
+  // {force: true} in order create new tables use force
+  .sync()
   .then((result) => {
     console.log("sync hiigdlee...");
   })

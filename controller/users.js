@@ -38,6 +38,7 @@ exports.login = asyncHandler(async (req, res, next) => {
     success: true,
     token: user.getJWT(),
     role: user.role,
+    user: user
   });
 });
 
