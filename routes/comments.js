@@ -8,11 +8,13 @@ const {
   updateComments,
   getComment,
   deleteComments,
+  getComments
 } = require("../controller/comments");
 
 // api/v1/comments
 router
   .route("/")
+  .get(getComments)
   .post(protect, authorize("admin", "operator", "user"), createComments);
 
 router
