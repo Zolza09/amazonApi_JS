@@ -35,7 +35,7 @@ exports.getComments = asyncHandler(async (req, res, next) => {
   const pagination = await paginate(page, limit, req.db.comments);
 
   // Create own query object
-  let query = {};
+  let query = { offset: pagination.start - 1, limit };
   //1. added default queries
   if (parsed) {
     query.where = parsed;
@@ -45,13 +45,21 @@ exports.getComments = asyncHandler(async (req, res, next) => {
     query.attributes = select;
   }
 
+  if (sort) {
+    query.order = sort
+      .split(" ")
+      .map((el) => [
+        el.charAt(0) === "-" ? el.substring(1) : el,
+        el.charAt(0) === "-" ? "DESC" : "ASC",
+      ]);
+  }
   // we can add query here
-  const comments = await req.db.comments.findAll( query,);
+  const comments = await req.db.comments.findAll(query);
 
   // parsed - ooriinhoo jinhene query shalgaj bolno
   res.status(200).json({
     success: true,
-    myquery: query,
+    //myquery: query,
     data: comments,
     pagination,
   });
