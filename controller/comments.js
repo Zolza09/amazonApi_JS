@@ -106,3 +106,35 @@ exports.deleteComments = asyncHandler(async (req, res, next) => {
     data: comment,
   });
 });
+
+// Lazy loading
+exports.getUserComments = asyncHandler(async (req, res, next) => {
+  const user = await req.db.user.findByPk(req.params.id);
+  if (!user) {
+    throw new MyError(`${req.params.id} id-тай user олдсонгүй. `, 400);
+  }
+
+  const comments = await user.getComments();
+
+  res.status(200).json({
+    success: true,
+    user,
+    comments: comments,
+  });
+});
+
+// Eager loading
+exports.getBookComments = asyncHandler(async (req, res, next) => {
+  const book = await req.db.book.findByPk(req.params.id, {
+    include: req.db.comments,
+  });
+
+  if (!book) {
+    throw new MyError(`${req.params.id} id-тай book олдсонгүй. `, 400);
+  }
+
+  res.status(200).json({
+    success: true,
+    book,
+  });
+});

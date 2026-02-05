@@ -10,6 +10,8 @@ const {
   uploadBookPhoto,
 } = require("../controller/books");
 
+const {getBookComments} = require("../controller/comments");
+
 const router = express.Router({ mergeParams: true });
 
 router
@@ -24,4 +26,5 @@ router
   .delete(protect, deleteBook);
 
 router.route("/:id/photo").put(protect, uploadBookPhoto);
+router.route("/:id/comments").get(getBookComments);
 module.exports = router;
