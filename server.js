@@ -40,8 +40,19 @@ app.use("/api/v1/users", usersRoutes);
 app.use("/api/v1/comments", commentsRoutes);
 app.use(errorHandler);
 
-db.book.belongsToMany(db.user, {through: "comments"});
-db.user.belongsToMany(db.book, {through: "comments"});
+// Sequelize magic holboos ashiglahiin tuld holboltgoo uurchluh gej bna
+// belongsToMany(db.user, { through: "comments" }); sezquelize-auto ashiglaj shuud js model uusgesen
+// odoo bid nar uusgesen modeloo shuud db holboj ugnu iluu ih magic methods ashiglahiin tuld
+
+db.book.belongsToMany(db.user, { through: db.comments });
+db.user.belongsToMany(db.book, { through: db.comments });
+
+db.user.hasMany(db.comments);
+db.comments.belongsTo(db.user);
+
+db.book.hasMany(db.comments);
+db.comments.belongsTo(db.book);
+
 db.category.hasMany(db.book);
 db.book.belongsTo(db.category);
 
@@ -55,7 +66,7 @@ db.sequelize
 
 const server = app.listen(
   process.env.PORT,
-  console.log(`Express server ${process.env.PORT} port running...`)
+  console.log(`Express server ${process.env.PORT} port running...`),
 );
 
 process.on("unhandledRejection", (err, promise) => {

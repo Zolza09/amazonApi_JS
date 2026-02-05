@@ -85,6 +85,11 @@ exports.getComment = asyncHandler(async (req, res, next) => {
   }
   res.status(200).json({
     success: true,
+    // comment bichsen user medeelel haruulj bna  await comment.getUser()
+    // comment bichsen user-iin buh nom shuuj bna await(await comment.getUser()).getBooks()
+    user: await comment.getUser(),
+    book: await comment.getBook(),
+    magic: Object.keys(req.db.comments.prototype),
     data: comment,
   });
 });
