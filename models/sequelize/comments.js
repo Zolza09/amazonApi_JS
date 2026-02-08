@@ -25,7 +25,16 @@ module.exports = function(sequelize, DataTypes) {
     },
     comments: {
       type: DataTypes.STRING(450),
-      allowNull: true
+      allowNull: true,
+      // comments duudah bolgond ene get func ajillana
+      get() {
+        let comment = this.getDataValue('comments').toLowerCase();
+        return comment.charAt(0).toUpperCase() + comment.slice(1);
+      },
+      // hadgalahdaa oorchilj bolno haraal ug ntr bval oorchilj bolno
+      set(value) {
+        this.setDataValue('comments', value.replace('миа', 'тиймэрхүү'));
+      }
     }
   }, {
     sequelize,
