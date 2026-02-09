@@ -83,8 +83,27 @@ exports.getComment = asyncHandler(async (req, res, next) => {
   if (!comment) {
     throw new MyError(`${req.params.id} id-тай коммент олдсонгүй. `, 400);
   }
+
+  // const [result] = await req.db.sequelize.query(
+  //   "SELECT u.name, c.comments, c.createdAt FROM `user` u LEFT JOIN `comments` c ON u.id = c.userId WHERE c.comments LIKE '%гоё%';",
+  // );
+
+  // result model baidlaar avaad deer uildej hj bolno
+  const result = await req.db.sequelize.query(
+    " select * from comments where comments LIKE '%гоё%';",
+    {
+      model : req.db.comments,
+    }
+  );
+
+  result[0].comments = "Ystoi goe nom shuu!";
+  result[0].save();
+  // const [uResult] = await req.db.sequelize.query(
+  //   " UPDATE comments set comments = 'үнэхээр сонирхолтой ноооом...' where id = 5;",
+  // );
   res.status(200).json({
     success: true,
+    result,
     // comment bichsen user medeelel haruulj bna  await comment.getUser()
     // comment bichsen user-iin buh nom shuuj bna await(await comment.getUser()).getBooks()
     user: await comment.getUser(),
