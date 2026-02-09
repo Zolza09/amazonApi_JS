@@ -26,6 +26,15 @@ module.exports = function(sequelize, DataTypes) {
     comments: {
       type: DataTypes.STRING(450),
       allowNull: true,
+      validate: {
+        // isEmail: {
+        //   msg: "Заавал имэйл оруулна уу",
+        // },
+        notContains: {
+          args: ['миа'],
+          msg: "Энэ мэссэжлд хориглогдсон үг байна",
+        },
+      },
       // comments duudah bolgond ene get func ajillana
       get() {
         let comment = this.getDataValue('comments').toLowerCase();
